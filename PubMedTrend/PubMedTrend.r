@@ -96,3 +96,43 @@ PubTotalHits <- function(args=FALSE) {
   }
   return(df)
 }
+
+################################
+### Update total count table ###
+
+# Get updated total values by quering PubMed API --------------------------------------------------
+
+getTotalUpdated <- function(yrStart=1950, yrMax=2017, saveAsFile="total_table_updated.csv") {
+  # add progressbar
+  pb <- txtProgressBar(min = yrStart, max = yrMax, style = 3)
+  # create empty data frame
+  df <- data.frame(NULL)
+  cat("Getting updated yearly totals\n")
+  
+  # Start retrieval loop
+  for(i in yrStart:yrMax) {
+    # tell progressbar how it's going
+    setTxtProgressBar(pb, i)
+    # create query
+    query.parsed <- paste(i, "%5Bppdat%5D", sep="")
+    # Get XML
+    pub.esearch <- getURL(paste("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&rettype=count&term=", 
+                                query.parsed, sep = ""))
+    # Parse XML
+    pub.esearch <- xmlTreeParse(pub.esearch, asText = TRUE)
+    # Get number of hits from XML
+    pub.count <- as.numeric(xmlValue(pub.esearch[["doc"]][["eSearchResult"]][["Count"]]))
+    # Don't add anything if count is 0
+    if (pub.count != 0) df <- rbind(df, data.frame("year" = i, "total_count" = pub.count))
+    # Wait 0.5 sec
+    Sys.sleep(0.5)
+  }
+  # close progressbar
+  close(pb)
+  # We want year as numeric. 
+  df$year <- as.numeric(df$year)
+  if (!is.null(saveAsFile)) write.csv(total_table_updated, file=saveAsFile, row.names=FALSE)
+  return(df)
+}
+# total_table_updated <- getTotalUpdated(1947,2017) # add saveAsFile=NULL to avoid writing to file
+# write.csv(total_table_updated, file="total_table_updated.csv", row.names=FALSE)

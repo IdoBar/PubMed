@@ -15,7 +15,7 @@ write.csv(total_table, file="total_table.csv", row.names=FALSE)
 
 # Get updated total values by quering PubMed API --------------------------------------------------
 
-getTotalUpdated <- function(yrStart=1950, yrMax=2012) {
+getTotalUpdated <- function(yrStart=1950, yrMax=2017) {
   # add progressbar
   pb <- txtProgressBar(min = yrStart, max = yrMax, style = 3)
   # create empty data frame
@@ -46,7 +46,7 @@ getTotalUpdated <- function(yrStart=1950, yrMax=2012) {
   df$year <- as.numeric(df$year)
   return(df)
 }
-total_table_updated <- getTotalUpdated(1947,2012)
+total_table_updated <- getTotalUpdated(1947,2017)
 write.csv(total_table_updated, file="total_table_updated.csv", row.names=FALSE)
 
 # compare counts from table with counts from my script -----------------------------------------
@@ -63,5 +63,5 @@ ggplot(df, aes(year, total_count, group=id, color=id)) +
   labs(title = "Pubmed total count (yearly)",
        x = "Publication year",
        y = "Total hits") +
-  scale_x_continuous(breaks=seq(1900,2012, 5))
+  scale_x_continuous(breaks=seq(1900,2017, 5))
 

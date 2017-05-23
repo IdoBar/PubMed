@@ -1,6 +1,5 @@
-require("RCurl")
-require("XML")
-require("plyr")
+required_packs <- c("RCurl", "XML", "plyr")
+install.deps(required_packs)
 
 ########################
 # Download PubMed Data #
